@@ -2,4 +2,5 @@
 @REM Create a http server at /jukebox-playlist/Server
 cd .\Server\
 echo %cd%
-php -S 127.0.0.1:3000
+@REM Use 0.0.0.0 to make the port accessible to any interface
+php -S 0.0.0.0:3000
