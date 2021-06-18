@@ -37,12 +37,14 @@ set_exception_handler(function ($error)
 Request::$url = array_slice(explode('/', $_SERVER['REQUEST_URI']), 1);
 Request::$method = $_SERVER['REQUEST_METHOD'];
 Request::$auth = new Server\Auth(apache_request_headers()['Authorization'] ?? null);
+Request::$auth->validate();
 
 // Sanitize POST and GET data to prevent XSS 
 $_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 $_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 // Start handling the request
+if (Request::$method == "OPTIONS") return;
 Request::handle(); 
 
 // [Server Classes]
@@ -105,7 +107,7 @@ class Request
  */
 class Response
 {
-    public static $status;
+    public static $status = 200; // Default: OK
     /**
      * Sets our response to an error
      * @param int $status Http error code

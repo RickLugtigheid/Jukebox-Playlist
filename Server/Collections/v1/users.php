@@ -12,7 +12,7 @@ class Users implements Collection
     public function POST()
     {
         // Check if we have a user with create permissions
-        if(Permissions::has_permisions(Request::$auth->user['permissions'], PERM_CREATE))
+        if(Permissions::has_permisions(Request::$auth->get_user()['permissions'], PERM_CREATE))
         {
             $username   = $_POST['username'];
             $password   = $_POST['password'];
@@ -53,7 +53,7 @@ class Users implements Collection
     public function DELETE()
     {
         // Check if we have a user with create permissions
-        if(Permissions::has_permisions(Auth::$curent->user['permissions'], PERM_DELETE))
+        if(Permissions::has_permisions(Request::$auth->get_user()['permissions'], PERM_DELETE))
         {
             $id = $_POST['uid'] ?? null;
             SQL::Execute("DELETE FROM Users WHERE userID=$id");

@@ -1,109 +1,78 @@
 <template>
-    <div class="container-fluid spotify-app" id="app">
+    <div id="app" class="container">
       <div class="row">
-        <section class="col-xs-1 side-nav clean-paddings">
-          <nav class="navbar">
-            <ul class="nav">
-              <li class="brand-icon"><a href="#"><span class="fa fa-spotify"></span></a></li>
-              <li><a href="#"><span class="fa fa-search"></span>Search</a></li>
-              <li><a href="#"><span class="fa fa-headphones"></span>Browse</a></li>
-              <li><a href="#"><span class="fa fa-feed"></span>Radio</a></li>
-              <li class="active"><a href="#"><span class="fa fa-bars fa-rotate-90"></span>Your Music</a></li>
-              <li><a href="#"><span class="fa fa-users"></span>Follow</a></li>
-            </ul>
-          </nav>
-        </section>
-        <section class="col-xs-11 clean-paddings">
-          <nav>
-            <div class="top-nav container-fluid">
-              <ul class="nav navbar-nav">
-                <li><a href="#">Playlists</a></li>
-                <li class="active"><a href="#">Songs</a></li>
-                <li><a href="#">Albums</a></li> 
-                <li><a href="#">Artists</a></li> 
-              </ul>
-            </div>
-          </nav>
-          <table class="table table-songs">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th>Song</th>
-                <th>Artist</th>
-                <th>Album</th>
-                <th><span class="fa fa-calendar-o"></span></th>
-                <th><span class="fa fa-clock-o"></span></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr tabindex="1">
-                <td>
-                  <a href="#" tabindex="0" class="play-btn fa-stack fa-lg">
-                    <span class="fa fa-play fa-stack-1x"></span>
-                    <span class="fa fa-circle-thin fa-stack-2x"></span>
-                  </a>
-                </td>
-                <td><span class="fa fa-check"></span></td>
-                <td>Memory</td>
-                <td>Sugarcult</td>
-                <td>Palm Trees and Power Lines</td>
-                <td class="secondary-info">2016-07-23</td>
-                <td class="secondary-info">3:54</td>
-              </tr>
-              <tr tabindex="1">
-                <td>
-                  <a href="#" tabindex="0" class="play-btn fa-stack fa-lg">
-                    <span class="fa fa-play fa-stack-1x"></span>
-                    <span class="fa fa-circle-thin fa-stack-2x"></span>
-                  </a>
-                </td>
-                <td><span class="fa fa-check"></span></td>
-                <td>Memory</td>
-                <td>Sugarcult</td>
-                <td>Palm Trees and Power Lines</td>
-                <td class="secondary-info">2016-07-23</td>
-                <td class="secondary-info">3:54</td>
-              </tr>
-              <tr tabindex="1" class="active">
-                <td>
-                  <a href="#" tabindex="0" class="play-btn fa-stack fa-lg">
-                    <span class="fa fa-play fa-stack-1x"></span>
-                    <span class="fa fa-circle-thin fa-stack-2x"></span>
-                  </a>
-                </td>
-                <td><span class="fa fa-check"></span></td>
-                <td>Memory</td>
-                <td>Sugarcult</td>
-                <td>Palm Trees and Power Lines</td>
-                <td class="secondary-info">2016-07-23</td>
-                <td class="secondary-info">3:54</td>
-              </tr>
-              <tr tabindex="1">
-                <td>
-                  <a href="#" tabindex="0" class="play-btn fa-stack fa-lg">
-                    <span class="fa fa-play fa-stack-1x"></span>
-                    <span class="fa fa-circle-thin fa-stack-2x"></span>
-                  </a>
-                </td>
-                <td><span class="fa fa-check"></span></td>
-                <td>Memory</td>
-                <td>Sugarcult</td>
-                <td>Palm Trees and Power Lines</td>
-                <td class="secondary-info">2016-07-23</td>
-                <td class="secondary-info">3:54</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <nav id="spy">
+                <ul class="sidebar-nav nav">
+                    <li class="sidebar-brand">
+                        <router-link to="/" data-scroll><span class="fa fa-home solo">Home</span></router-link>
+                    </li>
+                    <li>
+                      <router-link to="/search" data-scroll>
+                            <span class="fa fa-search solo">Search</span>
+                      </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/library" data-scroll>
+                            <span class="fa fa-anchor solo">Your Library</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <a href="#anch3" data-scroll>
+                            <span class="fa fa-anchor solo">Anchor 3</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#anch4" data-scroll>
+                            <span class="fa fa-anchor solo">Anchor 4</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-10">
+          <router-view/>
+        </div>
       </div>
-      <router-view/>
     </div>
 </template>
 
 <script>
+// Import bootstrap
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 export default {
-  name: 'App'
+  name: 'App',
+  mounted()
+  { 
+    // Bootstrap js
+    AppendHead('script',
+    {
+      src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js',
+      integrity: 'sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4',
+      crossorigin: 'anonymous'
+    });
+    // Fontawesome js
+    AppendHead('script', 
+    {
+      src: 'https://kit.fontawesome.com/5eb0758b3a.js',
+      crossorigin: 'anonymous'
+    });
+  }
+}
+/**
+ * @param {'script'|'link'} element
+ * @param {{}} attributes
+ */
+function AppendHead(element, attributes)
+{
+  let item = document.createElement(element);
+  Object.keys(attributes).forEach(key => {
+    item.setAttribute(key, attributes[key]);
+  });
+  document.head.appendChild(item);
 }
 </script>
 
@@ -111,119 +80,149 @@ export default {
 body {
   background-color: black;
   color: #dadce1;
-  min-width: 960px;
-}
-.nav li a,
-.nav li a:focus,
-.nav li a:hover,
-.nav li a:active {
-  background: transparent;
-  color: inherit;
-}
-.fa {
-  text-align: center;
 }
 
+#wrapper {
+  padding-left: 250px;
+  transition: all 0.4s ease 0s;
+}
 
-
-
-.side-nav {
+#sidebar-wrapper {
+  margin-left: -250px;
+  left: 250px;
+  width: 250px;
   background: #1c1c1f;
   color: #88898c;
-  text-align: center;
-}
-.side-nav .navbar {
-  margin-bottom: 0;
-}
-.side-nav li {
-  font-size: 12px;
-}
-.side-nav li a {
-  border-left: 3px solid transparent;
-  padding-bottom: 15px;
-}
-.side-nav li.active a,
-.side-nav li a:focus,
-.side-nav li a:active,
-.side-nav li a:hover {
-  color: #dadce1;
-  border-color: #84bd00;
-  outline: none;
-}
-.side-nav .fa {
-  font-size: 30px;
-  margin-bottom: 10px;
-  display: block;
-}
-.side-nav .brand-icon .fa {
-  font-size: 50px;
-  color: #dadce1;
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: all 0.4s ease 0s;
 }
 
-
-
-.top-nav {
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: bold;
-  color: #;
+#wrapper.active {
+  padding-left: 0;
 }
 
-.top-nav li a {
-  border-bottom: 2px solid transparent;
+#wrapper.active #sidebar-wrapper {
+  left: 0;
 }
 
-.top-nav li.active a,
-.top-nav li a:focus,
-.top-nav li a:active,
-.top-nav li a:hover {
-  border-bottom-color: #84bd00;
-  color: #dadce1;
-  outline: transparent;
+#page-content-wrapper {
+  width: 100%;
 }
 
-.clean-paddings {
+.sidebar-nav {
+  position: absolute;
+  top: 0;
+  width: 250px;
+  list-style: none;
+  margin: 0;
   padding: 0;
 }
 
-.table-songs,
-.table-songs thead th,
-.table-songs thead tr th,
-.table-songs tbody tr,
-.table-songs tbody tr td {
-  color: #dadce1;
-  border-color: #1c1c1f;
-  font-size: 12px;
+.sidebar-nav li {
+  line-height: 40px;
+  text-indent: 20px;
 }
 
-.table-songs tbody tr:focus,
-.table-songs tbody tr:hover,
-.table-songs tbody tr.active td {
-  background-color: #1c1c1f;
+.sidebar-nav li a {
+  color: #999999;
+  display: block;
+  text-decoration: none;
+  padding-left: 60px;
 }
 
-.table-songs thead tr th {
-  text-transform: uppercase;
-  color: #7d7e81;
-  font-weight: normal;
+.sidebar-nav li a span:before {
+  position: absolute;
+  left: 0;
+  color: #41484c;
+  text-align: center;
+  width: 20px;
+  line-height: 18px;
 }
 
-.table-songs tbody {
-  overflow: scroll;
-  height: 200px;
-}
-.table-songs .play-btn {
-  color: transparent;
-  font-size: 12px;
-}
-.table-songs .secondary-info {
-  color: #7d7e81;
+.sidebar-nav li a:hover,
+.sidebar-nav li.active {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+  text-decoration: none;
 }
 
-.table-songs tr.active .play-btn,
-.table-songs .play-btn:focus,
-.table-songs .play-btn:hover {
-  color: #dadce1;
-  outline: none;
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+  text-decoration: none;
 }
+
+.sidebar-nav > .sidebar-brand {
+  height: 65px;
+  line-height: 60px;
+  font-size: 18px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+  color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+  color: #fff;
+  background: none;
+}
+
+
+
+.content-header {
+  height: 65px;
+  line-height: 65px;
+}
+
+.content-header h1 {
+  margin: 0;
+  margin-left: 20px;
+  line-height: 65px;
+  display: inline-block;
+}
+
+#menu-toggle {
+    text-decoration: none;
+}
+
+.btn-menu {
+  color: #000;
+} 
+
+.inset {
+  padding: 20px;
+}
+
+/* @media (max-width:767px) {
+
+  #wrapper {
+    padding-left: 0;
+  }
+
+  #sidebar-wrapper {
+    left: 0;
+  }
+
+  #wrapper.active {
+    position: relative;
+    left: 250px;
+  }
+
+  #wrapper.active #sidebar-wrapper {
+    left: 250px;
+    width: 250px;
+    transition: all 0.4s ease 0s;
+  }
+
+  #menu-toggle {
+    display: inline-block;
+  }
+
+  .inset {
+    padding: 15px;
+  }
+
+} */
 </style>

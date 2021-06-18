@@ -3,7 +3,7 @@ const qs        = require('qs');
 const server    = require('../config/jukebox-server');
 /**
  * 
- * @param {"auth" | "users" | "songs" | "genres" | "lists"} collection 
+ * @param {"auth" | "users" | "songs" | "genres" | "playlists"} collection 
  */
 function call(collection)
 {
@@ -41,7 +41,22 @@ export default
             });
         });
     },
-
+    tokenExpired(token)
+    {
+        return new Promise(resolve =>
+        {
+            axios(
+                {
+                    method: 'GET',
+                    url: call('auth'),
+                    headers: 
+                    {
+                        Authorization: token
+                    }
+                }
+            ).then(() => resolve(true)).catch(() => resolve(false));
+        });
+    },
     // [Get]
     /**
      * Gets all the users from the server
@@ -52,6 +67,32 @@ export default
             {
                 method: 'GET',
                 url: call('users')
+            }
+        );
+    },
+    getGenres(token, id = '')
+    {
+        return axios(
+            {
+                method: 'GET',
+                url: call('genres') + '/' + id,
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
+    getPlaylists(token, id = '')
+    {
+        return axios(
+            {
+                method: 'GET',
+                url: call('playlists') + '/' + id,
+                headers: 
+                {
+                    Authorization: token
+                }
             }
         );
     }
