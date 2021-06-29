@@ -6,11 +6,13 @@ use Server\Logger;
 define('ROOT', __DIR__);
 require_once ROOT . '/Config/server.php';
 
-// Register library autoload
+// Register library/model autoload
 spl_autoload_register(function ($class)
 {
     $path = "./library/$class.php";
-    if (file_exists($path))
+    if (strpos($class, "Models") === 0)
+        require("./$class.php");
+    else if (file_exists($path))
         require($path);
     else
         throw new Error("Could not load lib '$path'");

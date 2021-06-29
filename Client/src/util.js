@@ -63,13 +63,14 @@ export default
         return `#${hex}${alpha}`
     },
     /**
-     * 
+     * Handles the errors that the api may give back
      * @param {AxiosError} err 
      */
     handleApiError(err)
     {
         switch(err.response.status)
         {
+            // When we get an 498 we need to create a new session
             case 498:
                 Vue.$cookies.remove('token');
                 Vue.$router.push({ path: '/login' });
@@ -80,4 +81,54 @@ export default
             break;
         }
     }
+}
+import server from '../src/jukebox-api'
+export class SessionPlaylist
+{
+    /**
+     * Stores all sessions
+     * @type {Array<SessionPlaylist>}
+     */
+    static sessions = [];
+
+    /**
+     * The index of the array where our session is stored
+     * @private
+     */
+    id;
+
+    /**
+     * A song object from the database
+     * @type {{"data":[{"type":"song", "id": number, "attributes":{ "name": string, "artist": string, "genreID": number }}]}}
+     */
+    songs = { data: [] };
+
+    constructor(name)
+    {
+        this.name = name;
+        // Add this to the session list
+        this.id = SessionPlaylist.sessions.length;
+        SessionPlaylist.sessions.push(this);
+    }
+    addSong(id)
+    {
+        server.getSongs(Vue.$cookies.get('token'), id).then(res =>
+        {
+            this.songs.data.push(res.data.data[0]);
+        });
+    }
+    removeSong()
+    {
+
+    }
+    /**
+     * Destroys this session
+     */
+    destroySession()
+    {
+        // Remove our session from the array
+        SessionPlaylist.sessions.splice(this.id, 1);
+    }
+
+    static getSession(id) { return this.sessions[id]; }
 }

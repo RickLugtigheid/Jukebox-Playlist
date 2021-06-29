@@ -83,12 +83,55 @@ export default
             }
         );
     },
+    getSongs(token, id = '')
+    {
+        return axios(
+            {
+                method: 'GET',
+                url: call('songs') + '/' + id,
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
     getPlaylists(token, id = '')
     {
         return axios(
             {
                 method: 'GET',
                 url: call('playlists') + '/' + id,
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
+    getPlaylistSongs(token, id)
+    {
+        return axios(
+            {
+                method: 'GET',
+                url: call('playlists') + '/' + id + '/songs',
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
+    createPlaylist()
+    {
+
+    },
+    removePlaylistSong(token, playlistID, songID)
+    {
+        return axios(
+            {
+                method: 'DELETE',
+                url: call('playlists') + '/' + playlistID + '/songs/' + songID,
                 headers: 
                 {
                     Authorization: token

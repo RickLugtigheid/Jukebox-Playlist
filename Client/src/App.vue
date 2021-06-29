@@ -6,26 +6,22 @@
             <nav id="spy">
                 <ul class="sidebar-nav nav">
                     <li class="sidebar-brand">
-                        <router-link to="/" data-scroll><span class="fa fa-home solo">Home</span></router-link>
+                        <router-link to="/" data-scroll><span class="fas fa-home solo">Home</span></router-link>
                     </li>
                     <li>
                       <router-link to="/search" data-scroll>
-                            <span class="fa fa-search solo">Search</span>
+                        <span class="fas fa-search">Search</span>
                       </router-link>
                     </li>
                     <li>
                         <router-link to="/library" data-scroll>
-                            <span class="fa fa-anchor solo">Your Library</span>
+                            <span class="far fa-list-alt">Your Library</span>
                         </router-link>
                     </li>
+                    <hr>
                     <li>
-                        <a href="#anch3" data-scroll>
-                            <span class="fa fa-anchor solo">Anchor 3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#anch4" data-scroll>
-                            <span class="fa fa-anchor solo">Anchor 4</span>
+                        <a href="#" v-on:click="createPlaylist()" data-scroll>
+                          <span class="far fa-plus-square">Create Playlist</span>
                         </a>
                     </li>
                 </ul>
@@ -43,36 +39,46 @@
 // Import bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import swal   from 'sweetalert2'
+import server from './jukebox-api'
+import {SessionPlaylist} from './util'
 export default {
   name: 'App',
-  mounted()
-  { 
-    // Bootstrap js
-    AppendHead('script',
+  methods:
+  {
+    createPlaylist()
     {
-      src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js',
-      integrity: 'sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4',
-      crossorigin: 'anonymous'
-    });
-    // Fontawesome js
-    AppendHead('script', 
-    {
-      src: 'https://kit.fontawesome.com/5eb0758b3a.js',
-      crossorigin: 'anonymous'
-    });
+      swal.fire({
+        title: 'Login Form',
+        html: `
+        <label for="swal-input-name">Playlist name</label>
+        <input type="text" id="swal-input-name" class="swal2-input" placeholder="Name">
+        <label for="swal-input-temp">Temp list</label>
+        <input type="checkbox" id="swal-input-temp" class="swal2-input">`,
+        focusConfirm: false,
+        preConfirm: () => {
+          return {
+            name: document.getElementById('swal-input-name').value,
+            temp: document.getElementById('swal-input-temp').value == 'on'
+          }
+        },
+        confirmButtonText: 'Create',
+        showCancelButton: true
+      }).then(res =>
+      {
+        if (!res.isDismissed)
+        {
+          // Create a temporary list (so a session)
+          if (res.value.temp)
+            new SessionPlaylist(res.value.name);
+          // Create a new playlist with the api
+          else
+            server.createPlaylist(this.$cookies.get('token'));            
+        }
+        console.warn(res);
+      });
+    }
   }
-}
-/**
- * @param {'script'|'link'} element
- * @param {{}} attributes
- */
-function AppendHead(element, attributes)
-{
-  let item = document.createElement(element);
-  Object.keys(attributes).forEach(key => {
-    item.setAttribute(key, attributes[key]);
-  });
-  document.head.appendChild(item);
 }
 </script>
 
@@ -136,7 +142,6 @@ body {
 .sidebar-nav li a span:before {
   position: absolute;
   left: 0;
-  color: #41484c;
   text-align: center;
   width: 20px;
   line-height: 18px;
@@ -161,11 +166,11 @@ body {
 }
 
 .sidebar-nav > .sidebar-brand a {
-  color: #999999;
+  color: #fcfcfc;
 }
 
 .sidebar-nav > .sidebar-brand a:hover {
-  color: #fff;
+  color: rgb(255, 255, 255);
   background: none;
 }
 
@@ -193,6 +198,11 @@ body {
 
 .inset {
   padding: 20px;
+}
+
+#spy li
+{
+  width: 100%;
 }
 
 /* @media (max-width:767px) {

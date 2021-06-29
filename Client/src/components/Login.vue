@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <form>
+    <!-- v-if so we don't get an error on first render -->
+    <form v-if="users">
       <div class="form-group">
         <label for="uids">Choose a user:</label>
         <select name="uid" class="form-select" id="uids" ref="user">
@@ -30,7 +31,11 @@ export default {
   {
     server.getUsers().then(res => {
       this.users = res.data;
-    }).catch(err => console.error(err));
+    }).catch(err => 
+    {
+      alert(err.response.status + ' page couldn\'t load');
+      console.error(err)
+    });
   },
   methods: 
   {

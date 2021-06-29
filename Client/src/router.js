@@ -6,6 +6,7 @@ import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Search from '@/components/Search'
 import Library from '@/components/Library'
+import Playlist from '@/components/Playlist'
 
 Vue.use(Router)
 
@@ -31,5 +32,10 @@ export default new Router({
       name: 'Login',
       component: Login
     },
+
+    {
+      path: '/playlist/:id/:session',
+      component: Playlist
+    }
   ]
 })
