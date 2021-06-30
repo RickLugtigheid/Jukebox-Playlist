@@ -1,14 +1,12 @@
 <?php
 
 use Models\UserData;
-use Server\Auth;
 use Server\Permissions;
-use Server\SQL;
 
 /**
  * Collection handler
  */
-class Users implements Collection
+class Users implements ICollection
 {
     public function POST()
     {
@@ -30,7 +28,7 @@ class Users implements Collection
     public function GET()
     {
         $users = array();
-        foreach (UserData::read() as $user)
+        foreach (UserData::read(Request::$url[2] ?? null) as $user)
         {
             $users[] = array(
                 "type" => "user",

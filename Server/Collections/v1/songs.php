@@ -6,7 +6,7 @@ use Server\Permissions;
 /**
  * Collection handler
  */
-class Songs implements Collection
+class Songs implements ICollection
 {
     public function POST()
     {
@@ -28,6 +28,7 @@ class Songs implements Collection
                         "genreID" => $song['genreID'],
                     )
                 );
+            Response::send_data($songs);
         }
     }
     public function PUT()

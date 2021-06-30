@@ -49,7 +49,7 @@ export default {
     createPlaylist()
     {
       swal.fire({
-        title: 'Login Form',
+        title: 'Create Playlist',
         html: `
         <label for="swal-input-name">Playlist name</label>
         <input type="text" id="swal-input-name" class="swal2-input" placeholder="Name">
@@ -66,16 +66,13 @@ export default {
         showCancelButton: true
       }).then(res =>
       {
-        if (!res.isDismissed)
-        {
-          // Create a temporary list (so a session)
-          if (res.value.temp)
-            new SessionPlaylist(res.value.name);
-          // Create a new playlist with the api
-          else
-            server.createPlaylist(this.$cookies.get('token'));            
-        }
-        console.warn(res);
+        if (res.isDismissed) return;
+        // Create a temporary list (so a session)
+        if (res.value.temp)
+          new SessionPlaylist(res.value.name);
+        // Create a new playlist with the api
+        else
+          server.createPlaylist(this.$cookies.get('token'));            
       });
     }
   }

@@ -6,7 +6,7 @@ use Server\SQL;
 /**
  * Collection handler
  */
-class Auth implements Collection
+class Auth implements ICollection
 {
     public function POST()
     {

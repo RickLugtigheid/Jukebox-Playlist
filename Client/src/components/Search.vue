@@ -4,7 +4,7 @@
       <!-- v-if so we don't get an error on first render -->
       <div class="row" v-if="genres">
         <div class="col-lg-2 col-sm-3 card m-2" v-for="genre in genres.data" :key="genre.id" :style="{ 'background-color':hexAddShade(hexAddAlpha(stringToColor(genre.attributes.name), .25), .25) }">
-          <router-link :to="{path: '/search?type=genre&query=' + genre.id}" data-scroll>
+          <router-link :to="{path: '/songs/' + genre.id}" data-scroll>
             <div class="card-body text-white">
               <h5 class="card-title">{{ genre.attributes.name }}</h5>
             </div>

@@ -83,6 +83,19 @@ export default
             }
         );
     },
+    getGenreSongs(token, id = '')
+    {
+        return axios(
+            {
+                method: 'GET',
+                url: call('genres') + '/' + id + '/songs',
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
     getSongs(token, id = '')
     {
         return axios(
@@ -126,12 +139,25 @@ export default
     {
 
     },
+    addPlaylistSong(token, playlistID, songID)
+    {
+        return axios(
+            {
+                method: 'POST',
+                url: call('playlists') + '/' + playlistID + '/song/' + songID,
+                headers: 
+                {
+                    Authorization: token
+                }
+            }
+        );
+    },
     removePlaylistSong(token, playlistID, songID)
     {
         return axios(
             {
                 method: 'DELETE',
-                url: call('playlists') + '/' + playlistID + '/songs/' + songID,
+                url: call('playlists') + '/' + playlistID + '/song/' + songID,
                 headers: 
                 {
                     Authorization: token

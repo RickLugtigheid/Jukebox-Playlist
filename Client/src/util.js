@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue from './main';
 export default
 {
     /**
@@ -70,11 +70,11 @@ export default
     {
         switch(err.response.status)
         {
-            // When we get an 498 we need to create a new session
+            // When we get any of these we need to create a new session
             case 498:
+            case 503:
                 Vue.$cookies.remove('token');
                 Vue.$router.push({ path: '/login' });
-                console.warn('Token expired');
                 break;
             default:
                 console.log(err.response)
@@ -82,8 +82,19 @@ export default
         }
     }
 }
-import server from '../src/jukebox-api'
-export class SessionPlaylist
+import server  from '../src/jukebox-api'
+import exports from './util'
+/**
+ * @interface
+ */
+class IPlaylist
+{
+    addSong(id) { throw Error("Not implemented " + id); }
+    getSongs() { throw Error("Not implemented "); }
+    removeSong(id) { throw Error("Not implemented " + id); }
+    destroy() { throw Error("Not implemented "); }
+}
+export class SessionPlaylist extends IPlaylist
 {
     /**
      * Stores all sessions
@@ -93,7 +104,6 @@ export class SessionPlaylist
 
     /**
      * The index of the array where our session is stored
-     * @private
      */
     id;
 
@@ -105,30 +115,63 @@ export class SessionPlaylist
 
     constructor(name)
     {
+        super();
         this.name = name;
         // Add this to the session list
         this.id = SessionPlaylist.sessions.length;
         SessionPlaylist.sessions.push(this);
     }
+    getSongs() { return new Promise(resolve => resolve({ data: this.songs })); }
+
     addSong(id)
     {
-        server.getSongs(Vue.$cookies.get('token'), id).then(res =>
+        return server.getSongs(Vue.$cookies.get('token'), id).then(res =>
         {
             this.songs.data.push(res.data.data[0]);
         });
     }
-    removeSong()
+    removeSong(id)
     {
-
+        this.songs.data.filter(song => 
+        {
+            return song.id != id;
+        })
     }
     /**
      * Destroys this session
      */
-    destroySession()
+    destroy()
     {
         // Remove our session from the array
         SessionPlaylist.sessions.splice(this.id, 1);
     }
 
     static getSession(id) { return this.sessions[id]; }
+}
+export class ApiPlaylist extends IPlaylist
+{
+    #token;
+    constructor(token, id)
+    {
+        super();
+        this.#token = token;
+        this.id = id;
+    }
+    getSongs()
+    {
+        return server.getPlaylistSongs(this.#token, this.id).catch(exports.handleApiError);
+    }
+    addSong(id)
+    {
+        server.addPlaylistSong(this.#token, this.id, id).catch(exports.handleApiError);
+    }
+    removeSong(id)
+    {
+        server.removePlaylistSong(this.#token, this.id, id).catch(exports.handleApiError);
+    }
+    // TODO: 
+    /*destroy()
+    {
+        server.removePlaylist();
+    }*/
 }

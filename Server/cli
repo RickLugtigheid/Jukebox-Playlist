@@ -1,0 +1,15 @@
+<?php
+// Check if there is any command to execute
+if (!isset($argv)) exit();
+
+// Check the command we want to execute
+switch (strtolower($argv[1]))
+{
+    case 'run':
+        $port = $argv[2] ?? 3000;
+        exec("php -S 0.0.0.0:$port");
+        break;
+    default:
+    echo "no command given";
+    break;
+}

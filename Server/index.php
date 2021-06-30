@@ -2,14 +2,13 @@
 // [Configure the server]
 
 use Server\Logger;
-
 define('ROOT', __DIR__);
 require_once ROOT . '/Config/server.php';
 
 // Register library/model autoload
 spl_autoload_register(function ($class)
 {
-    $path = "./library/$class.php";
+    $path = ROOT . "/library/$class.php";
     if (strpos($class, "Models") === 0)
         require("./$class.php");
     else if (file_exists($path))
@@ -153,11 +152,20 @@ class Response
         exit();
     }
 }
-interface Collection
+// [Interfaces]
+interface ICollection
 {
     public function POST();
     public function GET();
     public function PUT();
     public function PATCH();
     public function DELETE();
+}
+interface IModel
+{
+    public static function find($query);
+    public static function create($data);
+    public static function read($id=null);
+    public static function update($data);
+    public static function delete($id);
 }

@@ -1,8 +1,10 @@
 <?php
 namespace Models;
+
+use IModel;
 use Server\SQL;
 
-class UserData
+class UserData implements IModel
 {
     /**
      * Finds a song

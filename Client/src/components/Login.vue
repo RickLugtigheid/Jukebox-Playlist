@@ -20,6 +20,7 @@
 
 <script>
 import server from '../jukebox-api';
+import swa    from 'sweetalert2'
 export default {
   data()
   {
@@ -33,7 +34,14 @@ export default {
       this.users = res.data;
     }).catch(err => 
     {
-      alert(err.response.status + ' page couldn\'t load');
+      const author = require('../../package.json').author;
+      swa.fire({
+        title: err.response.status + 'couldn\'t load site',
+        icon: 'error',
+        html: `Please contact the site manager - <a href='mailto:${author.email}?subject=${err.response.status} error&body=${JSON.stringify(err.response, null, 2)}'>${author.email}</a>`,
+        showConfirmButton: false,
+        allowOutsideClick: false
+      });
       console.error(err)
     });
   },
@@ -53,7 +61,7 @@ export default {
       {
         console.error(err.response.data);
         this.$refs.passwd.value = '';
-        alert('Incorrect password given');
+        swa.fire('Incorrect password given', '', 'warning');
       });
     }
   }

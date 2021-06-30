@@ -2,16 +2,25 @@
 
 use Models\PlaylistData;
 use Server\Permissions;
-use Server\SQL;
 
 /**
  * Collection handler
  */
-class Playlists implements Collection
+class Playlists implements ICollection
 {
     public function POST()
     {
+        $id = Request::$url[2] ?? null;
 
+        // Check if we should add a song to a playlist
+        if (isset(Request::$url[3]) && Request::$url[3] == 'song' && isset(Request::$url[4]))
+        {
+            PlaylistData::createSong($id, Request::$url[4]);
+        }
+        Response::send(array(
+            "status" => 200,
+            "title" => "OK"
+        ));
     }
     public function GET()
     {
@@ -40,8 +49,10 @@ class Playlists implements Collection
 
             // Else just get the playlists
             $playlists = array();
+            $getPublic = isset(Request::$url[3]) && Request::$url[3] == 'songs'; // If we should get public playlists
+
             foreach (PlaylistData::read($id) as $list)
-                if ($user['userID'] == $list['userID'] || $list['is_public'] == 1)
+                if ($user['userID'] == $list['userID'] || ($getPublic && $list['is_public'] == 1))
                     $playlists[] = array(
                         "type" => "playlist",
                         "id" => $list['listID'],
@@ -74,7 +85,7 @@ class Playlists implements Collection
             if (!isset($id))
                 Response::send_error(404, "Not Found", "No id found!");
             // Check if we should remove a song from a playlist
-            else if (isset(Request::$url[3]) && Request::$url[3] == 'songs')
+            else if (isset(Request::$url[3]) && Request::$url[3] == 'song')
                 PlaylistData::deleteSong($id, Request::$url[4]);
             else
                 PlaylistData::delete($id);

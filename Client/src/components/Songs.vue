@@ -36,8 +36,7 @@
                 </a>
                 <!-- Dropdown actions -->
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <button class="dropdown-item" :id="song.id">Add to playlist</button>
-                  <button class="dropdown-item" :id="song.id" v-on:click="remove">Remove</button>
+                  <button class="dropdown-item" :id="song.id" v-on:click="addToPlaylist">Add to playlist</button>
                 </div>
               </div>
             </td>
@@ -45,18 +44,18 @@
         </tbody>
       </table>
     </section>
+        {{ this.$route.params.genreID }}
   </div>
 </template>
 
 <script>
-import { SessionPlaylist, ApiPlaylist }   from '../util';
+import Swal from 'sweetalert2';
+import server from '../jukebox-api';
+import util, { SessionPlaylist, ApiPlaylist }   from '../util';
 export default {
   data () 
   {
     return {
-      /**
-       * @type {SessionPlaylist}
-       */
       list: null,
       isSession: false,
       songs: null
@@ -64,23 +63,43 @@ export default {
   },
   mounted ()
   {
-    /**
-     * If our playlist is a session playlist
-     * @var {boolen}
-     */
-    let isSession = (this.$route.params.session == '1');
-    if (isSession)
-      this.list = SessionPlaylist.getSession(this.$route.params.id);
-    else
-      this.list = new ApiPlaylist(this.$cookies.get('token'), this.$route.params.id)
-    this.list.getSongs().then(res => this.songs = res.data);
+    server.getGenreSongs(this.$cookies.get('token'), this.$route.params.genreID).then(res => {
+    this.songs = res.data;
+    }).catch(util.handleApiError);
   },
   methods: {
-    remove(event)
+    addToPlaylist(event)
     {
-      this.list.removeSong(event.target.id);
-      // Reload
-      this.$router.go()
+        server.getPlaylists(this.$cookies.get('token')).then(res =>
+        {
+            let options = {}
+            // Seed the options array with our playlist data
+            res.data.data.forEach(list => 
+            {
+                options[list.id] = list.attributes.name
+            });
+            // Also add the session playlists to the options
+            SessionPlaylist.sessions.forEach(session =>
+            {
+                options['session-' + session.id] = session.name
+            });
+
+            Swal.fire({
+                title: 'Add to playlist',
+                text: 'Please select an playlist',
+                input: 'select',
+                inputOptions: options,
+                showCancelButton: true
+            }).then(res =>
+            {
+                if (res.isDismissed) return;
+                // Get our list
+                const list = (res.value.startsWith('session-')) ? SessionPlaylist.getSession(res.value.replace('session-', '')) : new ApiPlaylist(this.$cookies.get('token', res.value));
+                
+                // Add the song to the list
+                list.addSong(event.target.id);
+            });
+        }).catch(util.handleApiError);
     }
   }
 }

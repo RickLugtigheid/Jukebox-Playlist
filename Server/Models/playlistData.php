@@ -1,8 +1,10 @@
 <?php
 namespace Models;
+
+use IModel;
 use Server\SQL;
 
-class PlaylistData
+class PlaylistData implements IModel
 {
     /**
      * Finds a playlist
@@ -12,17 +14,32 @@ class PlaylistData
     {
         return SQL::Execute("SELECT * FROM playlists WHERE $query")->fetchAll();
     }
-    /*public static function create($data)
+    /**
+     * Creates a new playlist
+     * @param array('name' => string, 'is_public' => bool, userID => int) $data
+     */
+    public static function create($data)
     {
-        if (!isset($data['name']) || !isset($data['genreID'])) return false;
+        if (!isset($data['name']) || !isset($data['is_public']) || !isset($data['userID'])) return false;
 
-        SQL::ExecutePrepare("INSERT INTO songs (name, genreID) VALUES (:name, :genre)", array(
-            ":name"  => $data['name'],
-            ":genre" => $data['genreID'],
+        SQL::ExecutePrepare("INSERT INTO playlists (name, is_public, userID) VALUES (:name, :public, :user)", array(
+            ":name"   => $data['name'],
+            ":genre"  => $data['userID'],
+            ":public" => $data['is_public'] ? '1' : '0' // Store as a bit 1(true) or 0(false)
         ));
-
         return true;
-    }*/
+    }
+    /**
+     * Adds a song to the playlist
+     */
+    public static function createSong($listID, $songID)
+    {
+        SQL::ExecutePrepare("INSERT INTO saved_songs (listID, songID) VALUES (:list, :song)", array(
+            ":list"   => $listID,
+            ":song"  => $songID
+        ));
+        return true;
+    }
     /**
      * Reads all playlists or the playlist with id
      */

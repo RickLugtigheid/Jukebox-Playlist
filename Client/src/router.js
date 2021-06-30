@@ -4,6 +4,7 @@ import Router from 'vue-router'
 // [Import Components]
 import Home from '@/components/Home'
 import Login from '@/components/Login'
+import Songs from '@/components/Songs'
 import Search from '@/components/Search'
 import Library from '@/components/Library'
 import Playlist from '@/components/Playlist'
@@ -21,6 +22,10 @@ export default new Router({
       path: '/search',
       name: 'Search',
       component: Search
+    },
+    {
+      path: '/songs/:genreID',
+      component: Songs
     },
     {
       path: '/library',

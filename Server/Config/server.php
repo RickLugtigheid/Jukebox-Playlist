@@ -8,7 +8,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // [Global Variables]
 define("LOG_SETTINGS", array(
-    "max_size" => 32,
+    "max_size" => 64,
     "level" => "all"
 ));
 define("TOKEN_EXPIRE", "+30 minutes");
