@@ -91,6 +91,17 @@ class IPlaylist
 {
     addSong(id) { throw Error("Not implemented " + id); }
     getSongs() { throw Error("Not implemented "); }
+    getTotalDuration()
+    {
+        let duration = 0;
+        return this.getSongs().then(res => 
+        {
+            res.data.data.forEach(song => {
+                duration += parseInt(song.attributes.duration);
+            });
+            return duration;
+        });
+    }
     removeSong(id) { throw Error("Not implemented " + id); }
     destroy() { throw Error("Not implemented "); }
 }
@@ -151,11 +162,12 @@ export class SessionPlaylist extends IPlaylist
 export class ApiPlaylist extends IPlaylist
 {
     #token;
-    constructor(token, id)
+    constructor(token, id, name = '')
     {
         super();
         this.#token = token;
         this.id = id;
+        this.name = name;
     }
     getSongs()
     {
@@ -163,7 +175,8 @@ export class ApiPlaylist extends IPlaylist
     }
     addSong(id)
     {
-        server.addPlaylistSong(this.#token, this.id, id).catch(exports.handleApiError);
+        console.warn(id);
+        return server.addPlaylistSong(this.#token, this.id, id).catch(exports.handleApiError);
     }
     removeSong(id)
     {

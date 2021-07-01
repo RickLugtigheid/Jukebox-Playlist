@@ -23,9 +23,10 @@ class Songs implements ICollection
                     "type" => "song",
                     "id" => $song['songID'],
                     "attributes" => array(
-                        "name"    => $song['name'],
-                        "artist"  => $song['artist'],
-                        "genreID" => $song['genreID'],
+                        "name"     => $song['name'],
+                        "artist"   => $song['artist'],
+                        "duration" => $song['duration'],
+                        "genreID"  => $song['genreID']
                     )
                 );
             Response::send_data($songs);

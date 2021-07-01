@@ -28,7 +28,7 @@
             <td>{{ song.attributes.artist }}</td>
             <td>No albums Yet!</td>
             <td class="secondary-info">2016-07-23</td>
-            <td class="secondary-info">3:54</td>
+            <td class="secondary-info">{{ parseDuration(song.attributes.duration) }}</td>
             <td>
               <div class="dropdown show">
                 <a  href="#" tabindex="0" class="text-light fa-stack fa-lg" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,7 +44,6 @@
         </tbody>
       </table>
     </section>
-        {{ this.$route.params.genreID }}
   </div>
 </template>
 
@@ -68,6 +67,9 @@ export default {
     }).catch(util.handleApiError);
   },
   methods: {
+    parseDuration(durationSeconds) {
+      return Math.floor(durationSeconds / 60) + ":" + (durationSeconds % 60 ? durationSeconds % 60 : '00')
+    },
     addToPlaylist(event)
     {
         server.getPlaylists(this.$cookies.get('token')).then(res =>
@@ -92,12 +94,15 @@ export default {
                 showCancelButton: true
             }).then(res =>
             {
-                if (res.isDismissed) return;
-                // Get our list
-                const list = (res.value.startsWith('session-')) ? SessionPlaylist.getSession(res.value.replace('session-', '')) : new ApiPlaylist(this.$cookies.get('token', res.value));
-                
-                // Add the song to the list
-                list.addSong(event.target.id);
+              if (res.isDismissed) return;
+              // Get our list
+              const list = (res.value.startsWith('session-')) ? SessionPlaylist.getSession(res.value.replace('session-', '')) : new ApiPlaylist(this.$cookies.get('token'), res.value);
+              
+              // Add the song to the list
+              list.addSong(event.target.id)
+                .then(() => Swal.fire('Song added', '', 'success'))
+                .catch(err => Swal.fire(err.response.status + ' Error', 'Couldn\'t add the song to the playlist', 'error'));
+              
             });
         }).catch(util.handleApiError);
     }

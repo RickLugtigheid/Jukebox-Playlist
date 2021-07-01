@@ -28,7 +28,7 @@
             <td>{{ song.attributes.artist }}</td>
             <td>No albums Yet!</td>
             <td class="secondary-info">2016-07-23</td>
-            <td class="secondary-info">3:54</td>
+            <td class="secondary-info">{{ parseDuration(song.attributes.duration) }}</td>
             <td>
               <div class="dropdown show">
                 <a  href="#" tabindex="0" class="text-light fa-stack fa-lg" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -76,6 +76,9 @@ export default {
     this.list.getSongs().then(res => this.songs = res.data);
   },
   methods: {
+    parseDuration(durationSeconds) {
+        return Math.floor(durationSeconds / 60) + ":" + (durationSeconds % 60 ? durationSeconds % 60 : '00')
+    },
     remove(event)
     {
       this.list.removeSong(event.target.id);
