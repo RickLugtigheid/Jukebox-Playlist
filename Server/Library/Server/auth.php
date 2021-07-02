@@ -15,7 +15,7 @@ class Auth
      */
     public $is_valid = false;
 
-    public $user;
+    private $user;
 
     public function __construct($jwt)
     {
@@ -47,6 +47,12 @@ class Auth
             return (array)$this->decoded['data'];
         Response::send_error(403, "Forbidden", "Invalid key given");
         exit();
+    }
+    public function get_user()
+    {
+        if(!isset($this->user))
+            Response::send_error(404, "Not Found", "No user found!");
+        return $this->user;
     }
     /**
      * Get the key for this server

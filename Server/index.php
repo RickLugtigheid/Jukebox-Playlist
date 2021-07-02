@@ -2,15 +2,16 @@
 // [Configure the server]
 
 use Server\Logger;
-
 define('ROOT', __DIR__);
 require_once ROOT . '/Config/server.php';
 
-// Register library autoload
+// Register library/model autoload
 spl_autoload_register(function ($class)
 {
-    $path = "./library/$class.php";
-    if (file_exists($path))
+    $path = ROOT . "/library/$class.php";
+    if (strpos($class, "Models") === 0)
+        require("./$class.php");
+    else if (file_exists($path))
         require($path);
     else
         throw new Error("Could not load lib '$path'");
@@ -37,12 +38,14 @@ set_exception_handler(function ($error)
 Request::$url = array_slice(explode('/', $_SERVER['REQUEST_URI']), 1);
 Request::$method = $_SERVER['REQUEST_METHOD'];
 Request::$auth = new Server\Auth(apache_request_headers()['Authorization'] ?? null);
+Request::$auth->validate();
 
 // Sanitize POST and GET data to prevent XSS 
 $_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 $_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 // Start handling the request
+if (Request::$method == "OPTIONS") return;
 Request::handle(); 
 
 // [Server Classes]
@@ -105,7 +108,7 @@ class Request
  */
 class Response
 {
-    public static $status;
+    public static $status = 200; // Default: OK
     /**
      * Sets our response to an error
      * @param int $status Http error code
@@ -149,11 +152,20 @@ class Response
         exit();
     }
 }
-interface Collection
+// [Interfaces]
+interface ICollection
 {
     public function POST();
     public function GET();
     public function PUT();
     public function PATCH();
     public function DELETE();
+}
+interface IModel
+{
+    public static function find($query);
+    public static function create($data);
+    public static function read($id=null);
+    public static function update($data);
+    public static function delete($id);
 }

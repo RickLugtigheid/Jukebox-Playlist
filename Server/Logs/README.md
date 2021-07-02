@@ -11,5 +11,5 @@ The max size a log file can be before we rotate the log file.
 #### level
 The log level.
 Values: 
-- 'minimal' `only will log errors`
+- 'minimal' `will only log errors`
 - 'all' `logs all incomming requests`

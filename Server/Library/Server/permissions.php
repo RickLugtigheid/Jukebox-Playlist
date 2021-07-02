@@ -29,7 +29,7 @@ class Permissions
         if(is_numeric($perms)) return $perms > 4 ? 4 : $perms;
         else
         {
-            $perm_int = 0000;
+            $perm_int = 0;
             foreach (explode(',', $perms) as $type)
             {
                 switch(strtoupper($type))
@@ -48,7 +48,8 @@ class Permissions
                         break;
                 }
             }
-            return bindec($perm_int);
+            Logger::WriteLine(decbin($perm_int), "debug");
+            return decbin($perm_int);
         }
     }
 }

@@ -6,7 +6,7 @@ use Server\SQL;
 /**
  * Collection handler
  */
-class Auth implements Collection
+class Auth implements ICollection
 {
     public function POST()
     {
@@ -51,7 +51,12 @@ class Auth implements Collection
     }
     public function GET()
     {
-
+        if(!Request::$auth->is_valid)
+            Response::send_error(403, "Forbidden", "Invalid key given");
+        Response::send(array(
+            "status" => 200,
+            "title" => "OK",
+        ));
     }
     public function PUT()
     {
