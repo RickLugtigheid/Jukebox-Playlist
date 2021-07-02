@@ -2,6 +2,7 @@
   <div id="app">
     <!-- v-if so we don't get an error on first render -->
     <form v-if="users">
+      <button v-on:click="register()" >Register</button>
       <div class="form-group">
         <label for="uids">Choose a user:</label>
         <select name="uid" class="form-select" id="uids" ref="user">
@@ -21,6 +22,7 @@
 <script>
 import server from '../jukebox-api';
 import swa    from 'sweetalert2'
+import Swal from 'sweetalert2';
 export default {
   data()
   {
@@ -63,6 +65,28 @@ export default {
         this.$refs.passwd.value = '';
         swa.fire('Incorrect password given', '', 'warning');
       });
+    },
+    register()
+    {
+      Swal.fire({
+        title: 'Register',
+        html: `<input type="text" id="name" class="swal2-input" placeholder="Username">
+        <input type="password" id="password" class="swal2-input" placeholder="Password">`,
+        confirmButtonText: 'Sign in',
+        focusConfirm: false,
+        preConfirm: () => {
+          const name = Swal.getPopup().querySelector('#name').value
+          const password = Swal.getPopup().querySelector('#password').value
+          if (!name || !password) {
+            Swal.showValidationMessage(`Please enter name and password`)
+          }
+          return { name: name, password: password }
+        }
+      }).then((res) => {
+        server.createUser(res.value.name, res.value.password)
+        .then(() => Swal.fire('User Created', '', 'success'))
+        .catch(err => Swal.fire(err.response.status + ' Could not create user', '', 'error'));
+      })
     }
   }
 }

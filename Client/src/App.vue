@@ -24,6 +24,11 @@
                           <span class="far fa-plus-square">Create Playlist</span>
                         </a>
                     </li>
+                      <li>
+                        <a href="#" v-on:click="logout()" data-scroll>
+                          <span class="fas fa-sign-out-alt">logout</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -42,6 +47,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import swal   from 'sweetalert2'
 import server from './jukebox-api'
 import {SessionPlaylist} from './util'
+import router from './router'
+import Swal from 'sweetalert2'
 export default {
   name: 'App',
   methods:
@@ -73,6 +80,24 @@ export default {
         // Create a new playlist with the api
         else
           server.createPlaylist(this.$cookies.get('token'));            
+      });
+    },
+    logout()
+    {
+      Swal.fire(
+        {
+          title: 'Are you sure you want to logout?',
+          icon: 'warning',
+          showConfirmButton: true,
+          showCancelButton: true
+        }
+      ).then(res =>
+      {
+        if (res.isConfirmed)
+        {
+          this.$cookies.remove('token');
+          router.push('/login'); // Goto login page
+        }
       });
     }
   }

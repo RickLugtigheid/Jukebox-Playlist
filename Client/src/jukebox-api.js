@@ -139,6 +139,19 @@ export default
     {
 
     },
+    createUser(name, password)
+    {
+        return axios(
+            {
+                method: 'POST',
+                url: `${call('users')}`,
+                data: qs.stringify({
+                    username: name,
+                    password: password
+                })
+            }
+        );
+    },
     addPlaylistSong(token, playlistID, songID)
     {
         return axios(

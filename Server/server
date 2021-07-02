@@ -1,6 +1,23 @@
 <?php
 // Check if there is any command to execute
+
+use Server\SQL;
+
 if (!isset($argv)) exit();
+
+define("ROOT", __DIR__);
+
+// Register library/model autoload
+spl_autoload_register(function ($class)
+{
+    $path = ROOT . "/library/$class.php";
+    if (strpos($class, "Models") === 0)
+        require("./$class.php");
+    else if (file_exists($path))
+        require($path);
+    else
+        throw new Error("Could not load lib '$path'");
+});
 
 // Check the command we want to execute
 switch (strtolower($argv[1]))
@@ -9,7 +26,103 @@ switch (strtolower($argv[1]))
         $port = $argv[2] ?? 3000;
         exec("php -S 0.0.0.0:$port");
         break;
+    case 'log':
+        $logs = ROOT . '/Logs';
+        switch (strtolower($argv[2]))
+        {
+            case 'clear':
+                echo "[1/2] Clearing `error.log`\n";
+                if (file_exists($logs . '/error.log')) unlink($logs . '/error.log');
+                echo "[2/2] Clearing `request.log`\n";
+                if (file_exists($logs . '/request.log')) unlink($logs . '/request.log');
+            break;
+        }
+    break;
+    case 'database':
+        switch ($argv[2])
+        {
+            case 'export':
+                $file = $argv[3] ?? './';
+                // Get the tables of our database
+                $queryTables = SQL::Execute('SHOW TABLES');
+                // Set database create query
+                $content = "";
+                
+                // Loop throug all tables
+                foreach($queryTables as $table)
+                {
+                    // Check if we have a table
+                    if(empty($table)) continue;
+                    $table = $table[0];
+
+                    // Get create query
+                    $tableQuery = SQL::Execute("SHOW CREATE TABLE $table")->fetch()["Create Table"];
+                    // Add to content
+                    $content .= "$tableQuery;\n";
+                    
+                    // Get data from the table
+                    $data = SQL::Execute("SELECT * FROM $table");
+                    foreach($data as $row)
+                    {
+                        $values = "";
+                        // Foreach value
+                        $firstValue = true;
+                        foreach ($row as $value)
+                        {
+                            // The values are double so every 1 we use the value 
+                            if($firstValue) {
+                                $values .= is_numeric($value) ? "$value, " : "\"$value\", "; // If string btwn ''
+                                $firstValue = false;
+                            }
+                            else $firstValue = true;
+                        }
+                        // Remove the last to chars: ', '
+                        $values = substr($values, 0, -2);
+                        // Add Insert query to content
+                        $content .= "INSERT INTO $table VALUES($values);\n";
+                    }
+                }
+                file_put_contents($file . '/export.sql', $content);
+                echo "$file/export.sql created!\n";
+            break;
+            case 'import':
+                $file = $argv[3] ?? "./export.sql"; 
+                if (!file_exists($file)) 
+                {
+                    echo "Couldn't find $file\n";
+                    exit();
+                }
+                // First START TRANSACTION;
+                SQL::Execute("START TRANSACTION;", false);
+                try
+                {
+                    // Than drop the database
+                    echo "[1/3] Dropping database\n";
+                    $db = parse_ini_file(ROOT . "/Config/sql.ini")['database'];
+                    SQL::Execute("DROP DATABASE $db;", false);
+                    
+                    // Create the new database
+                    echo "[2/3] Creating new database\n";
+                    SQL::Execute("CREATE DATABASE $db;", false);
+                    
+                    // Use the import file
+                    echo "[3/3] Importing data\n";
+                    SQL::ExecuteFile($file);
+
+                    // Commit the changes
+                    SQL::Execute("COMMIT;", false);
+                }
+                catch (Exception $e)
+                {
+                    echo "Error $e\n";
+                    // There is an error so rollback
+                    SQL::Execute("ROLLBACK;", false);
+                }
+            break;
+        }
+    break;
     default:
-    echo "no command given";
+        echo "no command given";
     break;
 }
+echo "Done...";

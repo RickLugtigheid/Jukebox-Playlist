@@ -4,19 +4,14 @@
     <div class="row" v-if="playlists">
       <div class="col-lg-3 col-sm-4 card m-3" v-for="list in playlists" :key="list.id" :style="{'background-color':hexAddShade(hexAddAlpha(stringToColor(list.name), .25), .25) }">
         <h2>{{ list.name }}</h2>
-        <b>- {{ secondsToTime(durations[list.id]) }} -
-          <router-link class="playlist-text" :to="{path: '/playlist/' + list.id + '/0'}" data-scroll>
+        <b>- {{ getDuration(list) }} -
+          <router-link class="playlist-text" :to="{path: '/playlist/' + list.id + '/' + isSession(list)}" data-scroll>
             <a href="#" tabindex="0" class="play-btn fa-stack fa-lg">
               <span class="fa fa-play fa-stack-1x"></span>
               <span class="fa fa-circle-thin fa-stack-2x"></span>
             </a>
           </router-link>
         </b>
-      </div>
-      <div class="col-lg-3 col-sm-4 card m-3" v-for="list in sessions" :key="list" :style="{ 'background-color':hexAddShade(hexAddAlpha(stringToColor(list.name), .25), .25) }">
-        <router-link :to="{path: '/playlist/' + list.id + '/1'}" data-scroll>
-        <h2>{{ list.name }}</h2>
-        </router-link>
       </div>
     </div>
   </div>
@@ -30,9 +25,14 @@ export default {
   data () 
   {
     return {
+      /**
+       * @type {Array.<IPlaylist>}
+       */
       playlists: [],
-      durations: [],
-      sessions: SessionPlaylist.sessions
+      /**
+       * @type {Array.<string, int>}
+       */
+      durations: []
     }
   },
   mounted()
@@ -47,19 +47,32 @@ export default {
           this.playlists.push(list); // Add here so vue will render when we have the list and the duration
         });
       });
+      SessionPlaylist.sessions.forEach(session =>
+      {
+        // Set list duration
+        session.getTotalDuration().then(duration => 
+        {
+          this.durations['session-' + session.id] = duration;
+          this.playlists.push(session); // Add here so vue will render when we have the list and the duration
+        });
+      });
     }).catch(util.handleApiError);
   },
   methods: {
     stringToColor: util.stringToColor,
     hexAddAlpha: util.hexAddAlpha,
     hexAddShade: util.hexAddShade,
-    secondsToTime(seconds)
+    isSession(list)
     {
-      seconds = Math.round(seconds);
-      var hours = Math.floor(seconds / (60 * 60));
-
-      var divisor_for_minutes = seconds % (60 * 60);
-      var minutes = Math.floor(divisor_for_minutes / 60);
+      // I use this as a method because vue doesn't allow be to put it in {{ }}
+      return list instanceof SessionPlaylist ? '1' : '0';
+    },
+    getDuration(list)
+    {
+      let key      = list instanceof SessionPlaylist ? 'session-' + list.id : list.id;
+      let duration = this.durations[key];
+      let hours    = Math.floor(duration / (60 * 60));
+      let minutes  = Math.floor(duration / 60);
       return `${hours} hr ${minutes} min`;
     }
   }
