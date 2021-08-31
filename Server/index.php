@@ -20,7 +20,7 @@ spl_autoload_register(function ($class)
 set_error_handler(function ($errno, $errstr, $errfile, $errline)
 {
     // Log the error in the server logs
-    Logger::WriteLine("\nError($errno) $errstr\n    at: $errfile line $errline\n", "error");
+    Logger::WriteLine("\nError($errno) $errstr\n    at: $errfile:$errline\n", "error");
     // Return internal server error
     Response::send_error(500, "Internal Server Error", "There was an error in the server code.");
 });

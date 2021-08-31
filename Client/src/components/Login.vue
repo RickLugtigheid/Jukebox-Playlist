@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <!-- v-if so we don't get an error on first render -->
-    <form v-if="users">
-      <button v-on:click="register()" >Register</button>
+    <button class="btn btn-primary" v-on:click="register()" >Register</button>
+    <form v-if="users" method="POST">
       <div class="form-group">
         <label for="uids">Choose a user:</label>
         <select name="uid" class="form-select" id="uids" ref="user">
@@ -53,10 +53,11 @@ export default {
     {
       const uid   = this.$refs.user.value;
       const pass  = this.$refs.passwd.value;
-      server.authenticate(uid, pass).then(token => 
+      server.authenticate(uid, pass).then(res => 
       {
         // Set the token cookie to our token for later use
-        this.$cookies.set('token', token);
+        this.$cookies.set('token', res.token);
+        this.$cookies.set('user', uid);
         // Reroute to the home page
         this.$router.push({ path: '/' });
       }).catch(err =>
@@ -65,6 +66,7 @@ export default {
         this.$refs.passwd.value = '';
         swa.fire('Incorrect password given', '', 'warning');
       });
+      this.$refs.passwd.value = '';
     },
     register()
     {
@@ -84,7 +86,11 @@ export default {
         }
       }).then((res) => {
         server.createUser(res.value.name, res.value.password)
-        .then(() => Swal.fire('User Created', '', 'success'))
+        .then(res => 
+        {
+          this.$cookies.set('user', res.data.userID);
+          Swal.fire('User Created', '', 'success')
+        })
         .catch(err => Swal.fire(err.response.status + ' Could not create user', '', 'error'));
       })
     }

@@ -34,7 +34,7 @@ export default
                 // Create a buffer of our token
                 const buffer = Buffer.from(res.data.token);
                 // Encode our token buffer with base64 and resolve this promis
-                resolve(buffer.toString('base64'));
+                resolve({token: buffer.toString('base64')});
             }).catch(err =>
             {
                 reject(err);
@@ -135,9 +135,30 @@ export default
             }
         );
     },
-    createPlaylist()
+    /**
+     * 
+     * @param {string} token 
+     * @param {string} name 
+     * @param {boolean} is_public 
+     * @param {string} userID 
+     */
+    createPlaylist(token, name, is_public, userID)
     {
-
+        return axios(
+            {
+                method: 'POST',
+                url: `${call('playlists')}`,
+                headers: 
+                {
+                    Authorization: token
+                },
+                data: qs.stringify({
+                    name: name,
+                    is_public: is_public ? '1' : '0',
+                    userID: userID
+                })
+            }
+        );
     },
     createUser(name, password)
     {

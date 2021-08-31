@@ -24,8 +24,8 @@ class PlaylistData implements IModel
 
         SQL::ExecutePrepare("INSERT INTO playlists (name, is_public, userID) VALUES (:name, :public, :user)", array(
             ":name"   => $data['name'],
-            ":genre"  => $data['userID'],
-            ":public" => $data['is_public'] ? '1' : '0' // Store as a bit 1(true) or 0(false)
+            ":user"  => $data['userID'],
+            ":public" => $data['is_public'] // Store as a bit 1(true) or 0(false)
         ));
         return true;
     }

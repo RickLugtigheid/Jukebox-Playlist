@@ -43,8 +43,8 @@ class Auth implements ICollection
             // Send a ok response with the token
             Response::send(array(
                 "status" => 200,
-                "title" => "OK",
-                "token" => JWT::encode($payload, Server\Auth::get_key())
+                "title"  => "OK",
+                "token"  => JWT::encode($payload, Server\Auth::get_key()),
             ));
         }
         Response::send_error(406, "Not Acceptable", "Incorrect password for user with id '$id'");

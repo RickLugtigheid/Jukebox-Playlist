@@ -55,31 +55,35 @@ export default {
   {
     createPlaylist()
     {
+      console.warn(this.$route);
       swal.fire({
         title: 'Create Playlist',
         html: `
         <label for="swal-input-name">Playlist name</label>
         <input type="text" id="swal-input-name" class="swal2-input" placeholder="Name">
+        <br>
         <label for="swal-input-temp">Temp list</label>
         <input type="checkbox" id="swal-input-temp" class="swal2-input">`,
         focusConfirm: false,
         preConfirm: () => {
           return {
             name: document.getElementById('swal-input-name').value,
-            temp: document.getElementById('swal-input-temp').value == 'on'
+            temp: document.getElementById('swal-input-temp').checked
           }
         },
         confirmButtonText: 'Create',
         showCancelButton: true
       }).then(res =>
       {
+        console.log(res);
         if (res.isDismissed) return;
         // Create a temporary list (so a session)
         if (res.value.temp)
           new SessionPlaylist(res.value.name);
         // Create a new playlist with the api
         else
-          server.createPlaylist(this.$cookies.get('token'));            
+          // GET uid
+          server.createPlaylist(this.$cookies.get('token'), res.value.name, false, this.$cookies.get('user'));            
       });
     },
     logout()
@@ -96,6 +100,7 @@ export default {
         if (res.isConfirmed)
         {
           this.$cookies.remove('token');
+          this.$cookies.remove('user');
           router.push('/login'); // Goto login page
         }
       });

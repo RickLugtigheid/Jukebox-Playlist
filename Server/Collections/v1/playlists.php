@@ -1,6 +1,7 @@
 <?php
 
 use Models\PlaylistData;
+use Server\Logger;
 use Server\Permissions;
 
 /**
@@ -14,9 +15,9 @@ class Playlists implements ICollection
 
         // Check if we should add a song to a playlist
         if (isset(Request::$url[3]) && Request::$url[3] == 'song' && isset(Request::$url[4]))
-        {
             PlaylistData::createSong($id, Request::$url[4]);
-        }
+        else 
+            PlaylistData::create(array('name' => $_POST['name'], 'is_public' => $_POST['is_public'], 'userID' => $_POST['userID']));
         Response::send(array(
             "status" => 200,
             "title" => "OK"

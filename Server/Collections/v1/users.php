@@ -20,7 +20,14 @@ class Users implements ICollection
             
             // Create a new user
             if (UserData::create(array('username' => $username, 'password' => $password, 'permissions' => $perms)))
-                Response::send_error(200, "OK", "User Created");
+            {
+                $id = UserData::find("username='$username'")[0]['userID'];
+                //Response::send_error(200, "OK", "User Created");
+                Response::$status = 200;
+                Response::send(array(
+                    'userID' => $id
+                ));
+            }
             // Else return an error
             Response::send_error(500, "Internal server error", "Couldn't create user '$username'");
         //}

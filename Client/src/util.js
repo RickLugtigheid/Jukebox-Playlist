@@ -77,7 +77,7 @@ export default
                 Vue.$router.push({ path: '/login' });
                 break;
             default:
-                console.log(err.response)
+                console.error(err.response)
             break;
         }
     }
@@ -175,7 +175,6 @@ export class ApiPlaylist extends IPlaylist
     }
     addSong(id)
     {
-        console.warn(id);
         return server.addPlaylistSong(this.#token, this.id, id).catch(exports.handleApiError);
     }
     removeSong(id)
