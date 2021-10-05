@@ -48,7 +48,6 @@ class Permissions
                         break;
                 }
             }
-            Logger::WriteLine(decbin($perm_int), "debug");
             return decbin($perm_int);
         }
     }

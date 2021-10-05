@@ -31,10 +31,14 @@ switch (strtolower($argv[1]))
         switch (strtolower($argv[2]))
         {
             case 'clear':
-                echo "[1/2] Clearing `error.log`\n";
-                if (file_exists($logs . '/error.log')) unlink($logs . '/error.log');
-                echo "[2/2] Clearing `request.log`\n";
-                if (file_exists($logs . '/request.log')) unlink($logs . '/request.log');
+                $logs = glob(ROOT . '/Logs/*.log');
+                $logs_size = count($logs);
+                for ($i = 0; $i < count($logs); $i++)
+                {
+                    $log = $logs[$i];
+                    echo "[" . ($i + 1) . "/$logs_size] Clearing $log\n";
+                    if (file_exists($log)) unlink($log);
+                }
             break;
         }
     break;
